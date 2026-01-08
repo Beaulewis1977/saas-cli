@@ -1,0 +1,17 @@
+{
+  "project": {
+    "name": "saas-cli",
+    "type": "cli-tool",
+    "language": "typescript"
+  },
+  "conventions": {
+    "commit_style": "conventional",
+    "test_framework": "vitest",
+    "build_tool": "tsup"
+  },
+  "integrations": {
+    "github": true,
+    "pr_reviews": true,
+    "issue_triage": true
+  }
+}

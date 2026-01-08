@@ -1,0 +1,18 @@
+GoRoute(
+  path: '{{path}}',
+  name: '{{routeName}}',
+  builder: (context, state) {
+    {{#if hasParams}}
+    {{#each params}}
+    final {{name}} = state.pathParameters['{{name}}']{{#if (eq type "String")}}!{{else}} != null ? {{type}}.parse(state.pathParameters['{{name}}']!) : null{{/if}};
+    {{/each}}
+    return {{screenName}}(
+      {{#each params}}
+      {{name}}: {{name}},
+      {{/each}}
+    );
+    {{else}}
+    return const {{screenName}}();
+    {{/if}}
+  },
+),

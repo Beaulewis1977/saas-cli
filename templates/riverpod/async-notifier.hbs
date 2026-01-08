@@ -1,0 +1,44 @@
+import 'dart:async';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part '{{snakeCase name}}_notifier.g.dart';
+
+@riverpod
+class {{pascalCase name}}Notifier extends _${{pascalCase name}}Notifier {
+  @override
+  FutureOr<{{{state}}}> build() async {
+    // TODO: Fetch initial data
+    return ref.read({{camelCase name}}RepositoryProvider).getAll();
+  }
+
+  Future<void> refresh() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      return ref.read({{camelCase name}}RepositoryProvider).getAll();
+    });
+  }
+
+  Future<void> add({{singularize state}} item) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref.read({{camelCase name}}RepositoryProvider).create(item);
+      return ref.read({{camelCase name}}RepositoryProvider).getAll();
+    });
+  }
+
+  Future<void> update({{singularize state}} item) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref.read({{camelCase name}}RepositoryProvider).update(item);
+      return ref.read({{camelCase name}}RepositoryProvider).getAll();
+    });
+  }
+
+  Future<void> delete(String id) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref.read({{camelCase name}}RepositoryProvider).delete(id);
+      return ref.read({{camelCase name}}RepositoryProvider).getAll();
+    });
+  }
+}

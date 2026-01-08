@@ -1,0 +1,19 @@
+// PowerSync Schema for {{tableName}}
+
+import 'package:powersync/powersync.dart';
+
+const {{camelCase tableName}}Table = Table('{{snakeCase tableName}}', [
+  Column.text('id'),
+  // TODO: Add your columns here
+  // Column.text('name'),
+  // Column.integer('count'),
+  // Column.real('price'),
+  Column.text('{{userColumn}}'),
+  Column.text('created_at'),
+  Column.text('updated_at'),
+]);
+
+// Add to your schema:
+// final schema = Schema([
+//   {{camelCase tableName}}Table,
+// ]);

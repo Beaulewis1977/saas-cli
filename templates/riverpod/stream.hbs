@@ -1,0 +1,9 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part '{{snakeCase name}}_provider.g.dart';
+
+@riverpod
+Stream<{{{state}}}> {{camelCase name}}({{pascalCase name}}Ref ref) {
+  // TODO: Return stream of data
+  return ref.read({{camelCase name}}RepositoryProvider).watch();
+}

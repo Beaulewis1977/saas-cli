@@ -1,0 +1,20 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part '{{fileName}}.freezed.dart';
+part '{{fileName}}.g.dart';
+
+@freezed
+class {{className}} with _${{className}} {
+  const factory {{className}}({
+    {{#each fields}}
+    {{#if isNullable}}
+    {{type}}? {{name}},
+    {{else}}
+    required {{type}} {{name}},
+    {{/if}}
+    {{/each}}
+  }) = _{{className}};
+
+  factory {{className}}.fromJson(Map<String, dynamic> json) =>
+      _${{className}}FromJson(json);
+}

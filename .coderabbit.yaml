@@ -1,0 +1,45 @@
+language: en-US
+
+reviews:
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+
+  request_changes_workflow: true
+  high_level_summary: true
+  poem: false
+
+  path_filters:
+    - "!**/node_modules/**"
+    - "!**/dist/**"
+    - "!**/*.lock"
+    - "!**/pnpm-lock.yaml"
+    - "!**/*.generated.*"
+
+  path_instructions:
+    - path: "src/**/*.ts"
+      instructions: |
+        Review for TypeScript best practices.
+        Ensure proper error handling with CLIError.
+        Check for type safety.
+        Verify CLI commands have proper --help documentation.
+
+    - path: "**/*.test.ts"
+      instructions: |
+        Verify test coverage is comprehensive.
+        Check for proper mocking.
+
+    - path: "src/commands/**"
+      instructions: |
+        Check for security vulnerabilities.
+        Verify input validation.
+        Ensure API keys come from environment variables.
+
+    - path: "templates/**"
+      instructions: |
+        Verify Handlebars templates use {{{ }}} for code that shouldn't be escaped.
+
+chat:
+  auto_reply: true

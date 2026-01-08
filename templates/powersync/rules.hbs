@@ -1,0 +1,10 @@
+// PowerSync Sync Rules for {{tableName}}
+// User-scoped data synchronization
+
+bucket_definitions:
+  user_{{snakeCase tableName}}:
+    # Only sync records owned by the authenticated user
+    parameters:
+      - SELECT token->>'user_id' as user_id
+    data:
+      - SELECT * FROM {{snakeCase tableName}} WHERE {{userColumn}} = bucket.user_id

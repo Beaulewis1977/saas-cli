@@ -1,0 +1,51 @@
+import 'package:drift/drift.dart';
+
+import '../database.dart';
+import '../tables/{{snakeCase tableName}}.dart';
+
+part '{{snakeCase name}}_dao.g.dart';
+
+@DriftAccessor(tables: [{{pascalCase tableName}}])
+class {{pascalCase name}}Dao extends DatabaseAccessor<AppDatabase> with _${{pascalCase name}}DaoMixin {
+  {{pascalCase name}}Dao(AppDatabase db) : super(db);
+
+  /// Get all records
+  Future<List<{{pascalCase tableName}}Data>> getAll() {
+    return select({{camelCase tableName}}).get();
+  }
+
+  /// Get a record by ID
+  Future<{{pascalCase tableName}}Data?> getById(int id) {
+    return (select({{camelCase tableName}})..where((t) => t.id.equals(id))).getSingleOrNull();
+  }
+
+  /// Watch all records
+  Stream<List<{{pascalCase tableName}}Data>> watchAll() {
+    return select({{camelCase tableName}}).watch();
+  }
+
+  /// Watch a single record by ID
+  Stream<{{pascalCase tableName}}Data?> watchById(int id) {
+    return (select({{camelCase tableName}})..where((t) => t.id.equals(id))).watchSingleOrNull();
+  }
+
+  /// Insert a new record
+  Future<int> insertRecord({{pascalCase tableName}}Companion record) {
+    return into({{camelCase tableName}}).insert(record);
+  }
+
+  /// Update an existing record
+  Future<bool> updateRecord({{pascalCase tableName}}Data record) {
+    return update({{camelCase tableName}}).replace(record);
+  }
+
+  /// Delete a record by ID
+  Future<int> deleteById(int id) {
+    return (delete({{camelCase tableName}})..where((t) => t.id.equals(id))).go();
+  }
+
+  /// Delete all records
+  Future<int> deleteAll() {
+    return delete({{camelCase tableName}}).go();
+  }
+}

@@ -1,0 +1,9 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part '{{snakeCase name}}_provider.g.dart';
+
+@riverpod
+Future<{{{state}}}> {{camelCase name}}({{pascalCase name}}Ref ref) async {
+  // TODO: Implement data fetching logic
+  return ref.read({{camelCase name}}RepositoryProvider).get();
+}

@@ -1,0 +1,34 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part '{{snakeCase name}}_notifier.g.dart';
+
+@riverpod
+class {{pascalCase name}}Notifier extends _${{pascalCase name}}Notifier {
+  @override
+  {{{state}}} build() {
+    {{#if (eq state "List")}}
+    return [];
+    {{else}}
+    // TODO: Return initial state
+    throw UnimplementedError();
+    {{/if}}
+  }
+
+  void update({{{state}}} newState) {
+    state = newState;
+  }
+
+  {{#if (eq state "List")}}
+  void add(dynamic item) {
+    state = [...state, item];
+  }
+
+  void remove(dynamic item) {
+    state = state.where((e) => e != item).toList();
+  }
+
+  void clear() {
+    state = [];
+  }
+  {{/if}}
+}

@@ -1,0 +1,62 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part '{{snakeCase repositoryName}}.g.dart';
+
+/// Repository for {{entityName}} data operations
+abstract class {{repositoryName}} {
+  /// Get all {{pluralize entityNameLower}}
+  Future<List<{{entityName}}>> getAll();
+
+  /// Get a {{entityNameLower}} by ID
+  Future<{{entityName}}?> getById(String id);
+
+  /// Create a new {{entityNameLower}}
+  Future<{{entityName}}> create({{entityName}} {{entityNameLower}});
+
+  /// Update an existing {{entityNameLower}}
+  Future<{{entityName}}> update({{entityName}} {{entityNameLower}});
+
+  /// Delete a {{entityNameLower}} by ID
+  Future<void> delete(String id);
+
+  /// Watch all {{pluralize entityNameLower}}
+  Stream<List<{{entityName}}>> watchAll();
+
+  /// Watch a single {{entityNameLower}} by ID
+  Stream<{{entityName}}?> watchById(String id);
+}
+
+/// Implementation of {{repositoryName}}
+class {{repositoryName}}Impl implements {{repositoryName}} {
+  {{repositoryName}}Impl(this._dataSource);
+
+  final {{entityName}}DataSource _dataSource;
+
+  @override
+  Future<List<{{entityName}}>> getAll() => _dataSource.getAll();
+
+  @override
+  Future<{{entityName}}?> getById(String id) => _dataSource.getById(id);
+
+  @override
+  Future<{{entityName}}> create({{entityName}} {{entityNameLower}}) => _dataSource.create({{entityNameLower}});
+
+  @override
+  Future<{{entityName}}> update({{entityName}} {{entityNameLower}}) => _dataSource.update({{entityNameLower}});
+
+  @override
+  Future<void> delete(String id) => _dataSource.delete(id);
+
+  @override
+  Stream<List<{{entityName}}>> watchAll() => _dataSource.watchAll();
+
+  @override
+  Stream<{{entityName}}?> watchById(String id) => _dataSource.watchById(id);
+}
+
+@riverpod
+{{repositoryName}} {{camelCase repositoryName}}({{pascalCase repositoryName}}Ref ref) {
+  return {{repositoryName}}Impl(
+    ref.read({{entityNameLower}}DataSourceProvider),
+  );
+}

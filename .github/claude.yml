@@ -1,0 +1,56 @@
+# Claude Code GitHub Integration
+# Enables automated PR reviews and issue handling
+
+version: 1
+
+# PR Review Settings
+pull_requests:
+  enabled: true
+  auto_review: true
+  review_criteria:
+    - code_quality
+    - security
+    - testing
+    - documentation
+
+  # What Claude can do on PRs
+  actions:
+    - comment
+    - suggest_changes
+    - request_changes
+    - approve
+
+# Issue Handling
+issues:
+  enabled: true
+  auto_triage: true
+  labels:
+    - bug
+    - enhancement
+    - documentation
+    - question
+
+  # Auto-assign based on content
+  auto_assign:
+    enabled: true
+
+# Code Generation (for fix suggestions)
+code_generation:
+  enabled: true
+  languages:
+    - typescript
+    - javascript
+
+  # Safety limits
+  max_changes_per_pr: 10
+  require_tests: true
+
+# Security
+security:
+  # Never expose these in suggestions
+  redact_patterns:
+    - "ctx7sk*"
+    - "pplx-*"
+    - "*_API_KEY*"
+    - "*_TOKEN*"
+    - "*_SECRET*"
