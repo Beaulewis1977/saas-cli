@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { CLIError } from '../../../src/utils/error.js';
 import { assertCommandExists, commandExists } from '../../../src/utils/exec.js';
 
 describe('exec utilities', () => {
@@ -48,8 +49,9 @@ describe('exec utilities', () => {
         );
         expect.fail('Should have thrown');
       } catch (error) {
-        expect((error as Error).message).toContain('Flutter SDK not found');
-        expect((error as { hint?: string }).hint).toBe(
+        expect(error).toBeInstanceOf(CLIError);
+        expect((error as CLIError).message).toContain('Flutter SDK not found');
+        expect((error as CLIError).hint).toBe(
           'Install Flutter: https://docs.flutter.dev/get-started/install',
         );
       }

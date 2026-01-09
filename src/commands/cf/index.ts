@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import ora from 'ora';
 import { AuthError, CLIError, handleError } from '../../utils/error.js';
 import { execFileAsync } from '../../utils/exec.js';
-import { assertValidProjectName } from '../../utils/validation.js';
+import { assertValidWorkerName } from '../../utils/validation.js';
 
 async function checkWranglerCLI(): Promise<boolean> {
   try {
@@ -52,15 +52,15 @@ export const cfCommand = new Command('cf')
           switch (action) {
             case 'new':
               if (!name) throw new CLIError('Worker name required for "new" action');
-              assertValidProjectName(name);
+              assertValidWorkerName(name);
               args = ['init', name];
               break;
             case 'deploy':
-              if (name) assertValidProjectName(name);
+              if (name) assertValidWorkerName(name);
               args = name ? ['deploy', '--name', name] : ['deploy'];
               break;
             case 'logs':
-              if (name) assertValidProjectName(name);
+              if (name) assertValidWorkerName(name);
               args = name ? ['tail', name] : ['tail'];
               break;
             case 'list':

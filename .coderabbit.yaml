@@ -42,11 +42,11 @@ reviews:
         - Verify tests cover edge cases
         - Check for proper async/await handling
 
-# Files to ignore
-path_filters:
-  - "!**/pnpm-lock.yaml"
-  - "!**/dist/**"
-  - "!**/*.map"
+  # Files to ignore
+  path_filters:
+    - "!**/pnpm-lock.yaml"
+    - "!**/dist/**"
+    - "!**/*.map"
 
 # Chat settings
 chat:

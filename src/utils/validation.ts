@@ -14,6 +14,12 @@ const IDENTIFIER_REGEX = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 const PROJECT_NAME_REGEX = /^[a-zA-Z][a-zA-Z0-9_-]*$/;
 
 /**
+ * Regex for valid Cloudflare Worker names.
+ * Wrangler only allows letters, digits, and hyphens (no underscores).
+ */
+const WORKER_NAME_REGEX = /^[a-zA-Z][a-zA-Z0-9-]*$/;
+
+/**
  * Regex for valid FFmpeg resolution format (WIDTHxHEIGHT or -1:HEIGHT etc).
  */
 const RESOLUTION_REGEX = /^(-?\d+):(-?\d+)$|^(\d+)x(\d+)$/;
@@ -69,6 +75,29 @@ export function assertValidProjectName(name: string): void {
       `Invalid project name: "${name}"`,
       EXIT_CODES.GENERAL_ERROR,
       'Project name must start with a letter and contain only letters, numbers, hyphens, and underscores.',
+    );
+  }
+}
+
+/**
+ * Validate a Cloudflare Worker name.
+ * Wrangler only allows letters, digits, and hyphens (no underscores).
+ * @returns true if valid, false otherwise
+ */
+export function validateWorkerName(name: string): boolean {
+  return WORKER_NAME_REGEX.test(name);
+}
+
+/**
+ * Assert that a Cloudflare Worker name is valid, throwing CLIError if not.
+ * @param name - The worker name to validate
+ */
+export function assertValidWorkerName(name: string): void {
+  if (!validateWorkerName(name)) {
+    throw new CLIError(
+      `Invalid worker name: "${name}"`,
+      EXIT_CODES.GENERAL_ERROR,
+      'Worker name must start with a letter and contain only letters, numbers, and hyphens (no underscores).',
     );
   }
 }

@@ -1,4 +1,4 @@
-import { isAbsolute, normalize, relative, resolve } from 'node:path';
+import { isAbsolute, normalize, relative, resolve, sep } from 'node:path';
 import { EXIT_CODES } from '../types/index.js';
 import { CLIError } from './error.js';
 
@@ -19,8 +19,11 @@ export function validateOutputPath(userPath: string, baseDir: string = process.c
   // Check if the resolved path is within the base directory
   const relativePath = relative(normalizedBase, normalizedPath);
 
-  // If relative path starts with '..' or is absolute, it escapes the base
-  if (relativePath.startsWith('..') || isAbsolute(relativePath)) {
+  // Segment-aware check: reject '..' or '../...' but allow '..hidden' filenames
+  const escapesBase =
+    relativePath === '..' || relativePath.startsWith(`..${sep}`) || isAbsolute(relativePath);
+
+  if (escapesBase) {
     throw new CLIError(
       `Output path escapes project directory: "${userPath}"`,
       EXIT_CODES.GENERAL_ERROR,

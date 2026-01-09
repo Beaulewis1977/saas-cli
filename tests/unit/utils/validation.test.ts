@@ -6,11 +6,13 @@ import {
   assertValidProjectName,
   assertValidResolution,
   assertValidTimestamp,
+  assertValidWorkerName,
   validateCRF,
   validateIdentifier,
   validateProjectName,
   validateResolution,
   validateTimestamp,
+  validateWorkerName,
 } from '../../../src/utils/validation.js';
 
 describe('validateIdentifier', () => {
@@ -98,6 +100,50 @@ describe('assertValidProjectName', () => {
   it('throws CLIError for invalid project names', () => {
     expect(() => assertValidProjectName('my app')).toThrow(CLIError);
     expect(() => assertValidProjectName('test; echo pwned')).toThrow(CLIError);
+  });
+});
+
+describe('validateWorkerName', () => {
+  it('accepts valid worker names (letters, digits, hyphens only)', () => {
+    expect(validateWorkerName('my-worker')).toBe(true);
+    expect(validateWorkerName('myWorker')).toBe(true);
+    expect(validateWorkerName('worker123')).toBe(true);
+    expect(validateWorkerName('api')).toBe(true);
+  });
+
+  it('rejects names with underscores (Wrangler does not allow them)', () => {
+    expect(validateWorkerName('my_worker')).toBe(false);
+    expect(validateWorkerName('my_app_worker')).toBe(false);
+  });
+
+  it('rejects other invalid worker names', () => {
+    expect(validateWorkerName('123worker')).toBe(false);
+    expect(validateWorkerName('-myworker')).toBe(false);
+    expect(validateWorkerName('my worker')).toBe(false);
+    expect(validateWorkerName('my.worker')).toBe(false);
+    expect(validateWorkerName('')).toBe(false);
+  });
+});
+
+describe('assertValidWorkerName', () => {
+  it('does not throw for valid worker names', () => {
+    expect(() => assertValidWorkerName('my-worker')).not.toThrow();
+    expect(() => assertValidWorkerName('myWorker')).not.toThrow();
+  });
+
+  it('throws CLIError for names with underscores', () => {
+    expect(() => assertValidWorkerName('my_worker')).toThrow(CLIError);
+  });
+
+  it('throws CLIError with helpful message', () => {
+    try {
+      assertValidWorkerName('my_worker');
+      expect.fail('Should have thrown');
+    } catch (error) {
+      expect(error).toBeInstanceOf(CLIError);
+      expect((error as CLIError).message).toContain('Invalid worker name');
+      expect((error as CLIError).hint).toContain('no underscores');
+    }
   });
 });
 

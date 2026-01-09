@@ -74,6 +74,7 @@ Some commands require external CLIs to be installed. The table below shows which
 | `saas init supabase` | Supabase CLI | `npm install -g supabase` or `brew install supabase/tap/supabase` |
 | `saas video *` | FFmpeg | `brew install ffmpeg` (macOS) or `apt install ffmpeg` (Linux) |
 | `saas cf *` | Wrangler CLI | `npm install -g wrangler` |
+| `saas supabase *` | Supabase CLI | `npm install -g supabase` or `brew install supabase/tap/supabase` |
 
 ### Commands Without External Dependencies
 
@@ -82,7 +83,6 @@ These commands work out of the box with just Node.js:
 - `saas docs` - Documentation lookup (requires `CONTEXT7_API_KEY`)
 - `saas ask` - AI questions (requires `PERPLEXITY_API_KEY`)
 - `saas gen` - Code generation
-- `saas supabase` - Supabase management (requires API keys)
 - `saas redis` - Redis management (requires `REDIS_URL`)
 - `saas push` - Push notifications (requires OneSignal keys)
 - `saas flags` - Feature flags (requires PostHog keys)
