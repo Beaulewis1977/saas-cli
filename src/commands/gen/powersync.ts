@@ -1,6 +1,7 @@
 import pc from 'picocolors';
 import { renderTemplate } from '../../services/template.js';
 import { CLIError, handleError } from '../../utils/error.js';
+import { validateOutputPath } from '../../utils/path.js';
 
 interface PowerSyncOptions {
   userColumn?: string;
@@ -32,9 +33,10 @@ export async function powersyncAction(
 
     // Output result
     if (options.output) {
+      const safePath = validateOutputPath(options.output);
       const { writeFile } = await import('node:fs/promises');
-      await writeFile(options.output, output);
-      console.log(pc.green(`✓ Generated ${options.output}`));
+      await writeFile(safePath, output);
+      console.log(pc.green(`✓ Generated ${safePath}`));
     } else {
       console.log(output);
     }

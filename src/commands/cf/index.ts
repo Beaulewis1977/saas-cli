@@ -1,14 +1,12 @@
-import { exec } from 'node:child_process';
-import { promisify } from 'node:util';
 import { Command } from 'commander';
 import ora from 'ora';
 import { AuthError, CLIError, handleError } from '../../utils/error.js';
-
-const execAsync = promisify(exec);
+import { execFileAsync } from '../../utils/exec.js';
+import { assertValidWorkerName } from '../../utils/validation.js';
 
 async function checkWranglerCLI(): Promise<boolean> {
   try {
-    await execAsync('wrangler --version');
+    await execFileAsync('wrangler', ['--version']);
     return true;
   } catch {
     return false;
@@ -29,7 +27,7 @@ async function runWranglerCommand(args: string[]): Promise<string> {
   }
 
   try {
-    const { stdout, stderr } = await execAsync(`wrangler ${args.join(' ')}`);
+    const { stdout, stderr } = await execFileAsync('wrangler', args);
     if (stderr && !stderr.includes('warning')) {
       console.error(stderr);
     }
@@ -54,12 +52,15 @@ export const cfCommand = new Command('cf')
           switch (action) {
             case 'new':
               if (!name) throw new CLIError('Worker name required for "new" action');
+              assertValidWorkerName(name);
               args = ['init', name];
               break;
             case 'deploy':
+              if (name) assertValidWorkerName(name);
               args = name ? ['deploy', '--name', name] : ['deploy'];
               break;
             case 'logs':
+              if (name) assertValidWorkerName(name);
               args = name ? ['tail', name] : ['tail'];
               break;
             case 'list':

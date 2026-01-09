@@ -1,6 +1,7 @@
 import pc from 'picocolors';
 import { renderTemplate } from '../../services/template.js';
 import { handleError } from '../../utils/error.js';
+import { validateOutputPath } from '../../utils/path.js';
 
 interface GoRouterOptions {
   path?: string;
@@ -60,9 +61,10 @@ export async function gorouterAction(name: string, options: GoRouterOptions): Pr
 
     // Output result
     if (options.output) {
+      const safePath = validateOutputPath(options.output);
       const { writeFile } = await import('node:fs/promises');
-      await writeFile(options.output, output);
-      console.log(pc.green(`✓ Generated ${options.output}`));
+      await writeFile(safePath, output);
+      console.log(pc.green(`✓ Generated ${safePath}`));
     } else {
       console.log(output);
     }

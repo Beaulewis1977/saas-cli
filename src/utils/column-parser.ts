@@ -1,5 +1,6 @@
-import type { ColumnSpec } from '../types/index.js';
+import { type ColumnSpec, EXIT_CODES } from '../types/index.js';
 import { CLIError } from './error.js';
+import { validateIdentifier } from './validation.js';
 
 /**
  * Parse a column specification string into structured column definitions
@@ -38,7 +39,7 @@ function parseColumn(definition: string): ColumnSpec {
   if (segments.length < 2) {
     throw new CLIError(
       `Invalid column definition: "${definition}"`,
-      1,
+      EXIT_CODES.GENERAL_ERROR,
       'Format: name:type[:modifiers] (e.g., id:int:pk, title:text, userId:uuid:fk(auth.users.id))',
     );
   }
@@ -48,8 +49,17 @@ function parseColumn(definition: string): ColumnSpec {
   if (!name || !type) {
     throw new CLIError(
       `Missing name or type in column: "${definition}"`,
-      1,
+      EXIT_CODES.GENERAL_ERROR,
       'Each column must have a name and type',
+    );
+  }
+
+  // Validate column name is a safe SQL identifier
+  if (!validateIdentifier(name)) {
+    throw new CLIError(
+      `Invalid column name: "${name}"`,
+      EXIT_CODES.GENERAL_ERROR,
+      'Column name must start with a letter or underscore, and contain only letters, numbers, and underscores.',
     );
   }
 
@@ -96,13 +106,39 @@ function parseModifier(column: ColumnSpec, modifier: string): void {
     column.isForeignKey = true;
     const ref = fkMatch[1]!;
     const parts = ref.split('.');
+    let fkTable: string;
+    let fkColumn: string;
     if (parts.length >= 2) {
-      column.foreignKeyTable = parts.slice(0, -1).join('.');
-      column.foreignKeyColumn = parts[parts.length - 1];
+      fkTable = parts.slice(0, -1).join('.');
+      fkColumn = parts[parts.length - 1]!;
     } else {
-      column.foreignKeyTable = ref;
-      column.foreignKeyColumn = 'id';
+      fkTable = ref;
+      fkColumn = 'id';
     }
+
+    // Validate FK table (may be schema.table format)
+    const tableParts = fkTable.split('.');
+    for (const part of tableParts) {
+      if (!validateIdentifier(part)) {
+        throw new CLIError(
+          `Invalid foreign key table: "${fkTable}"`,
+          EXIT_CODES.GENERAL_ERROR,
+          'Foreign key table must contain only valid SQL identifiers (letters, numbers, underscores).',
+        );
+      }
+    }
+
+    // Validate FK column
+    if (!validateIdentifier(fkColumn)) {
+      throw new CLIError(
+        `Invalid foreign key column: "${fkColumn}"`,
+        EXIT_CODES.GENERAL_ERROR,
+        'Foreign key column must start with a letter or underscore, and contain only letters, numbers, and underscores.',
+      );
+    }
+
+    column.foreignKeyTable = fkTable;
+    column.foreignKeyColumn = fkColumn;
     return;
   }
 
@@ -115,7 +151,7 @@ function parseModifier(column: ColumnSpec, modifier: string): void {
 
   throw new CLIError(
     `Unknown modifier: "${modifier}"`,
-    1,
+    EXIT_CODES.GENERAL_ERROR,
     'Valid modifiers: pk, fk(table.column), nullable, default(value), autoincrement',
   );
 }
@@ -157,6 +193,15 @@ function normalizeType(type: string): string {
  * Convert columns to SQL CREATE TABLE statement
  */
 export function columnsToSQL(tableName: string, columns: ColumnSpec[]): string {
+  // Validate table name
+  if (!validateIdentifier(tableName)) {
+    throw new CLIError(
+      `Invalid table name: "${tableName}"`,
+      EXIT_CODES.GENERAL_ERROR,
+      'Table name must start with a letter or underscore, and contain only letters, numbers, and underscores.',
+    );
+  }
+
   const lines: string[] = [];
 
   for (const col of columns) {
@@ -190,6 +235,15 @@ export function columnsToSQL(tableName: string, columns: ColumnSpec[]): string {
  * Convert columns to Drift table definition
  */
 export function columnsToDrift(tableName: string, columns: ColumnSpec[]): string {
+  // Validate table name
+  if (!validateIdentifier(tableName)) {
+    throw new CLIError(
+      `Invalid table name: "${tableName}"`,
+      EXIT_CODES.GENERAL_ERROR,
+      'Table name must start with a letter or underscore, and contain only letters, numbers, and underscores.',
+    );
+  }
+
   const lines: string[] = [`class ${toPascalCase(tableName)} extends Table {`];
 
   for (const col of columns) {
@@ -273,7 +327,8 @@ function formatDefaultValue(value: string, type: string): string {
   if (type === 'integer' || type === 'real' || type === 'bigint') {
     return value;
   }
-  return `'${value}'`;
+  // Escape single quotes for SQL string literals
+  return `'${value.replace(/'/g, "''")}'`;
 }
 
 /**
@@ -289,7 +344,8 @@ function formatDartDefault(value: string, type: string): string {
   if (type === 'integer' || type === 'real' || type === 'bigint') {
     return `const Constant(${value})`;
   }
-  return `const Constant('${value}')`;
+  // Escape single quotes for Dart string literals
+  return `const Constant('${value.replace(/'/g, "\\'")}')`;
 }
 
 // Case conversion helpers
