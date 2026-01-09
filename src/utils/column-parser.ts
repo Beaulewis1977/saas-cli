@@ -327,7 +327,8 @@ function formatDefaultValue(value: string, type: string): string {
   if (type === 'integer' || type === 'real' || type === 'bigint') {
     return value;
   }
-  return `'${value}'`;
+  // Escape single quotes for SQL string literals
+  return `'${value.replace(/'/g, "''")}'`;
 }
 
 /**

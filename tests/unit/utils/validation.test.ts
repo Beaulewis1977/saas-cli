@@ -53,10 +53,11 @@ describe('assertValidIdentifier', () => {
   });
 
   it('includes helpful error message', () => {
+    expect(() => assertValidIdentifier('invalid-name', 'column name')).toThrow(CLIError);
     try {
       assertValidIdentifier('invalid-name', 'column name');
+      expect.fail('Should have thrown');
     } catch (error) {
-      expect(error).toBeInstanceOf(CLIError);
       expect((error as CLIError).message).toContain('Invalid column name');
       expect((error as CLIError).hint).toContain('must start with a letter or underscore');
     }

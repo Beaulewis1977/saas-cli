@@ -31,10 +31,11 @@ describe('validateOutputPath', () => {
   });
 
   it('provides helpful error message', () => {
+    expect(() => validateOutputPath('../output.ts')).toThrow(CLIError);
     try {
       validateOutputPath('../output.ts');
+      expect.fail('Should have thrown');
     } catch (error) {
-      expect(error).toBeInstanceOf(CLIError);
       expect((error as CLIError).message).toContain('escapes project directory');
       expect((error as CLIError).hint).toContain('must be within the current project directory');
     }

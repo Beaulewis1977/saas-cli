@@ -39,8 +39,9 @@ export async function assertCommandExists(
 ): Promise<void> {
   const exists = await commandExists(command);
   if (!exists) {
-    // Import CLIError dynamically to avoid circular dependency
+    // Import dynamically to avoid circular dependency
     const { CLIError } = await import('./error.js');
-    throw new CLIError(`${displayName} not found`, 1, installHint);
+    const { EXIT_CODES } = await import('../types/index.js');
+    throw new CLIError(`${displayName} not found`, EXIT_CODES.GENERAL_ERROR, installHint);
   }
 }

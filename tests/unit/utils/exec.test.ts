@@ -15,8 +15,9 @@ describe('exec utilities', () => {
     });
 
     it('should return true for common shell commands', async () => {
-      // 'which' or 'where' is used internally, 'ls' should exist on Unix
-      const exists = await commandExists('ls');
+      // Use platform-appropriate command
+      const command = process.platform === 'win32' ? 'cmd' : 'ls';
+      const exists = await commandExists(command);
       expect(exists).toBe(true);
     });
   });

@@ -3,6 +3,7 @@ import ora from 'ora';
 import pc from 'picocolors';
 import { CLIError, handleError } from '../../utils/error.js';
 import { execFileAsync } from '../../utils/exec.js';
+import { validateOutputPath } from '../../utils/path.js';
 import {
   assertValidCRF,
   assertValidResolution,
@@ -51,8 +52,8 @@ async function runFFprobe(args: string[]): Promise<string> {
     const { stdout } = await execFileAsync('ffprobe', args);
     return stdout;
   } catch (error) {
-    const err = error as { stderr?: string };
-    return err.stderr || '';
+    const message = error instanceof Error ? error.message : String(error);
+    throw new CLIError(`FFprobe command failed: ${message}`);
   }
 }
 
@@ -126,6 +127,7 @@ export const videoCommand = new Command('video')
       .argument('<audio>', 'Audio file path')
       .requiredOption('-o, --output <file>', 'Output file path')
       .action(async (video, audio, options) => {
+        const safePath = validateOutputPath(options.output);
         const spinner = ora('Combining video and audio...').start();
         try {
           await runFFmpeg([
@@ -138,10 +140,10 @@ export const videoCommand = new Command('video')
             '-c:a',
             'aac',
             '-y',
-            options.output,
+            safePath,
           ]);
 
-          spinner.succeed(`Combined: ${options.output}`);
+          spinner.succeed(`Combined: ${safePath}`);
         } catch (error) {
           spinner.fail('Failed to combine video and audio');
           handleError(error);
@@ -156,11 +158,12 @@ export const videoCommand = new Command('video')
       .requiredOption('-o, --output <file>', 'Output file path')
       .action(async (video, options) => {
         assertValidTimestamp(options.at);
+        const safePath = validateOutputPath(options.output);
         const spinner = ora('Extracting thumbnail...').start();
         try {
-          await runFFmpeg(['-i', video, '-ss', options.at, '-vframes', '1', '-y', options.output]);
+          await runFFmpeg(['-i', video, '-ss', options.at, '-vframes', '1', '-y', safePath]);
 
-          spinner.succeed(`Thumbnail: ${options.output}`);
+          spinner.succeed(`Thumbnail: ${safePath}`);
         } catch (error) {
           spinner.fail('Failed to extract thumbnail');
           handleError(error);
@@ -175,13 +178,14 @@ export const videoCommand = new Command('video')
       .requiredOption('-o, --output <file>', 'Output file path')
       .action(async (video, options) => {
         assertValidResolution(options.size);
+        const safePath = validateOutputPath(options.output);
         // Convert WxH format to W:H for FFmpeg scale filter
         const scaleSize = options.size.replace('x', ':');
         const spinner = ora('Resizing video...').start();
         try {
-          await runFFmpeg(['-i', video, '-vf', `scale=${scaleSize}`, '-y', options.output]);
+          await runFFmpeg(['-i', video, '-vf', `scale=${scaleSize}`, '-y', safePath]);
 
-          spinner.succeed(`Resized: ${options.output}`);
+          spinner.succeed(`Resized: ${safePath}`);
         } catch (error) {
           spinner.fail('Failed to resize video');
           handleError(error);
@@ -196,6 +200,7 @@ export const videoCommand = new Command('video')
       .requiredOption('-o, --output <file>', 'Output file path')
       .action(async (video, options) => {
         assertValidCRF(options.quality);
+        const safePath = validateOutputPath(options.output);
         const spinner = ora('Compressing video...').start();
         try {
           await runFFmpeg([
@@ -208,10 +213,10 @@ export const videoCommand = new Command('video')
             '-preset',
             'medium',
             '-y',
-            options.output,
+            safePath,
           ]);
 
-          spinner.succeed(`Compressed: ${options.output}`);
+          spinner.succeed(`Compressed: ${safePath}`);
         } catch (error) {
           spinner.fail('Failed to compress video');
           handleError(error);
@@ -228,6 +233,7 @@ export const videoCommand = new Command('video')
       .action(async (video, options) => {
         assertValidTimestamp(options.start);
         assertValidTimestamp(options.end);
+        const safePath = validateOutputPath(options.output);
         const spinner = ora('Trimming video...').start();
         try {
           await runFFmpeg([
@@ -240,10 +246,10 @@ export const videoCommand = new Command('video')
             '-c',
             'copy',
             '-y',
-            options.output,
+            safePath,
           ]);
 
-          spinner.succeed(`Trimmed: ${options.output}`);
+          spinner.succeed(`Trimmed: ${safePath}`);
         } catch (error) {
           spinner.fail('Failed to trim video');
           handleError(error);

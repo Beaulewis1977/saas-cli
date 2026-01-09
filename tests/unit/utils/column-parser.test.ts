@@ -60,11 +60,19 @@ describe('columnsToSQL', () => {
   });
 
   it('generates SQL with foreign key', () => {
-    const columns = parseColumnSpec('userId:uuid:fk(auth.users)');
+    // Format: fk(table.column) or fk(schema.table.column)
+    const columns = parseColumnSpec('userId:uuid:fk(users.id)');
+    const sql = columnsToSQL('posts', columns);
+
+    expect(sql).toContain('REFERENCES users(id)');
+  });
+
+  it('defaults FK column to id when not specified', () => {
+    const columns = parseColumnSpec('userId:uuid:fk(users)');
     const sql = columnsToSQL('posts', columns);
 
     // FK without column specified defaults to 'id'
-    expect(sql).toContain('REFERENCES auth(users)');
+    expect(sql).toContain('REFERENCES users(id)');
   });
 
   it('generates SQL with default value', () => {
