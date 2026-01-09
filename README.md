@@ -298,7 +298,7 @@ touch .env
 
 **Copy this template into your `.env` file:**
 
-```bash
+```ini
 # Documentation (Context7)
 CONTEXT7_API_KEY=
 
@@ -324,7 +324,11 @@ POSTHOG_API_KEY=
 POSTHOG_PROJECT_ID=
 ```
 
-> **Important:** Add `.env` to your `.gitignore` to avoid committing secrets.
+**Add `.env` to your `.gitignore` to avoid committing secrets:**
+
+```gitignore
+.env
+```
 
 ### Option 2: Shell Exports (Global)
 
@@ -357,6 +361,8 @@ export POSTHOG_PROJECT_ID="your-project-id"
 ```
 
 After adding, reload your shell: `source ~/.bashrc` or `source ~/.zshrc`
+
+> **Note:** Shell-exported environment variables take precedence over `.env` file values. If you have both, the shell export wins.
 
 ### Variable Reference
 
