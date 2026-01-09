@@ -2,6 +2,7 @@ import pc from 'picocolors';
 import { renderTemplate } from '../../services/template.js';
 import { columnsToDrift, parseColumnSpec } from '../../utils/column-parser.js';
 import { CLIError, handleError } from '../../utils/error.js';
+import { validateOutputPath } from '../../utils/path.js';
 
 interface DriftOptions {
   columns?: string;
@@ -51,9 +52,10 @@ export async function driftAction(
 
     // Output result
     if (options.output) {
+      const safePath = validateOutputPath(options.output);
       const { writeFile } = await import('node:fs/promises');
-      await writeFile(options.output, output);
-      console.log(pc.green(`✓ Generated ${options.output}`));
+      await writeFile(safePath, output);
+      console.log(pc.green(`✓ Generated ${safePath}`));
     } else {
       console.log(output);
     }
