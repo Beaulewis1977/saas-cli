@@ -7,9 +7,11 @@
 Live documentation · AI-powered assistance · Code generation · Backend integrations
 
 [![npm version](https://img.shields.io/npm/v/@beaulewis/saas-cli.svg?style=flat-square)](https://www.npmjs.com/package/@beaulewis/saas-cli)
+[![npm downloads](https://img.shields.io/npm/dm/@beaulewis/saas-cli.svg?style=flat-square)](https://www.npmjs.com/package/@beaulewis/saas-cli)
 [![license](https://img.shields.io/npm/l/@beaulewis/saas-cli.svg?style=flat-square)](https://github.com/Beaulewis1977/saas-cli/blob/main/LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/Beaulewis1977/saas-cli/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/Beaulewis1977/saas-cli/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/Beaulewis1977/saas-cli/ci.yml?branch=develop&style=flat-square&label=CI)](https://github.com/Beaulewis1977/saas-cli/actions/workflows/ci.yml)
 [![node](https://img.shields.io/node/v/@beaulewis/saas-cli.svg?style=flat-square)](https://nodejs.org)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/Beaulewis1977/saas-cli/pulls)
 
 </div>
 
@@ -18,6 +20,7 @@ Live documentation · AI-powered assistance · Code generation · Backend integr
 ## Table of Contents
 
 - [Features](#features)
+- [Requirements](#requirements)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Commands](#commands)
@@ -50,6 +53,15 @@ Live documentation · AI-powered assistance · Code generation · Backend integr
 | **Supabase Management** | RLS policies, migrations, types, functions |
 | **Backend Services** | Redis, Cloudflare Workers, OneSignal, PostHog |
 | **Video Processing** | FFmpeg-based video operations |
+
+---
+
+## Requirements
+
+- **Node.js 20+** - [Download](https://nodejs.org/)
+- **Optional:** Flutter SDK (for `init` commands)
+- **Optional:** FFmpeg (for `video` commands)
+- **Optional:** Supabase CLI (for local Supabase development)
 
 ---
 
@@ -327,6 +339,10 @@ This CLI executes external tools (FFmpeg, Wrangler, Flutter, Supabase CLI) via s
 ## Contributing
 
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
+
+- **Bug reports:** [Open an issue](https://github.com/Beaulewis1977/saas-cli/issues/new)
+- **Feature requests:** [Start a discussion](https://github.com/Beaulewis1977/saas-cli/discussions)
+- **Pull requests:** Fork, create a branch, and submit a PR
 
 ```bash
 # Clone and install
