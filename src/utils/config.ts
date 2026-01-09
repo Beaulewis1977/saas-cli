@@ -50,7 +50,7 @@ export async function loadGlobalConfig(): Promise<GlobalConfig> {
     const content = await readFile(configPath, 'utf-8');
     const config = parseYaml(content) as GlobalConfig;
     return { ...getDefaultGlobalConfig(), ...config };
-  } catch (error) {
+  } catch (_error) {
     throw new ConfigError(
       `Failed to parse global config at ${configPath}`,
       'Check the YAML syntax in your config file',
@@ -69,7 +69,7 @@ export async function saveGlobalConfig(config: GlobalConfig): Promise<void> {
     await mkdir(configDir, { recursive: true, mode: 0o700 });
     const content = stringifyYaml(config as Record<string, unknown>);
     await writeFile(configPath, content, { mode: 0o600 });
-  } catch (error) {
+  } catch (_error) {
     throw new ConfigError(
       `Failed to save global config to ${configPath}`,
       'Check file permissions',
@@ -103,7 +103,7 @@ async function loadProjectConfigFromPath(configPath: string): Promise<ProjectCon
   try {
     const content = await readFile(configPath, 'utf-8');
     return parseYaml(content) as ProjectConfig;
-  } catch (error) {
+  } catch (_error) {
     throw new ConfigError(
       `Failed to parse project config at ${configPath}`,
       'Check the YAML syntax in your saas.yaml file',

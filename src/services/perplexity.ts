@@ -1,6 +1,6 @@
 import type { Got } from 'got';
 import type { PerplexityAskOptions, PerplexityResponse } from '../types/index.js';
-import { cacheKey, cachedFetch } from '../utils/cache.js';
+import { cachedFetch, cacheKey } from '../utils/cache.js';
 import { createAuthenticatedClient } from './http.js';
 
 const PERPLEXITY_BASE_URL = 'https://api.perplexity.ai';

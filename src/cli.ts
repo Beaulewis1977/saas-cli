@@ -1,7 +1,5 @@
 import { Command } from 'commander';
 import pc from 'picocolors';
-import { handleError } from './utils/error.js';
-
 import { askCommand } from './commands/ask/index.js';
 import { cfCommand } from './commands/cf/index.js';
 // Import commands (will be added as we implement them)
@@ -13,6 +11,7 @@ import { pushCommand } from './commands/push/index.js';
 import { redisCommand } from './commands/redis/index.js';
 import { supabaseCommand } from './commands/supabase/index.js';
 import { videoCommand } from './commands/video/index.js';
+import { handleError } from './utils/error.js';
 
 const VERSION = '1.0.0';
 

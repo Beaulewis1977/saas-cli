@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs';
-import { readFile, readdir } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Handlebars from 'handlebars';
@@ -156,7 +156,7 @@ export async function loadTemplate(
     const compiled = Handlebars.compile(content);
     templateCache.set(cacheKey, compiled);
     return compiled;
-  } catch (error) {
+  } catch (_error) {
     throw new Error(`Template not found: ${category}/${name}.hbs`);
   }
 }

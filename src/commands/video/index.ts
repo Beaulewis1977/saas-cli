@@ -89,10 +89,10 @@ export const videoCommand = new Command('video')
               `  Duration: ${format.duration ? Number.parseFloat(format.duration).toFixed(2) + 's' : 'N/A'}`,
             );
             console.log(
-              `  Size: ${format.size ? (Number.parseInt(format.size) / 1024 / 1024).toFixed(2) + ' MB' : 'N/A'}`,
+              `  Size: ${format.size ? (Number.parseInt(format.size, 10) / 1024 / 1024).toFixed(2) + ' MB' : 'N/A'}`,
             );
             console.log(
-              `  Bitrate: ${format.bit_rate ? (Number.parseInt(format.bit_rate) / 1000).toFixed(0) + ' kbps' : 'N/A'}`,
+              `  Bitrate: ${format.bit_rate ? (Number.parseInt(format.bit_rate, 10) / 1000).toFixed(0) + ' kbps' : 'N/A'}`,
             );
 
             if (videoStream.width) {

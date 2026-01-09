@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import ora from 'ora';
 import pc from 'picocolors';
-import { type RLSPolicyType, RLS_POLICIES, runSupabaseCommand } from '../../services/supabase.js';
+import { RLS_POLICIES, type RLSPolicyType, runSupabaseCommand } from '../../services/supabase.js';
 import { columnsToSQL, parseColumnSpec } from '../../utils/column-parser.js';
 import { CLIError, handleError } from '../../utils/error.js';
 

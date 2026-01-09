@@ -1,6 +1,6 @@
 import type { Got } from 'got';
 import { LIBRARY_IDS } from '../types/index.js';
-import { cacheKey, cachedFetch } from '../utils/cache.js';
+import { cachedFetch, cacheKey } from '../utils/cache.js';
 import { APIError } from '../utils/error.js';
 import { createAuthenticatedClient } from './http.js';
 
@@ -43,7 +43,7 @@ export class Context7Client {
 
       // Fallback: try to construct a likely ID
       return `/${libraryName}/${libraryName}`;
-    } catch (error) {
+    } catch (_error) {
       // If search fails, try the fallback pattern
       return `/${libraryName}/${libraryName}`;
     }

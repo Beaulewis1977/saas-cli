@@ -139,12 +139,12 @@ export const flagsCommand = new Command('flags')
           }
 
           // Determine if it's a boolean or percentage
-          const isPercentage = /^\d+$/.test(value) && Number.parseInt(value) <= 100;
+          const isPercentage = /^\d+$/.test(value) && Number.parseInt(value, 10) <= 100;
           const isBoolean = value === 'true' || value === 'false';
 
           const updateData: Record<string, unknown> = {};
           if (isPercentage) {
-            updateData.rollout_percentage = Number.parseInt(value);
+            updateData.rollout_percentage = Number.parseInt(value, 10);
           } else if (isBoolean) {
             updateData.active = value === 'true';
           } else {

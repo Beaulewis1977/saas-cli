@@ -1,10 +1,14 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.3/schema.json",
-  "organizeImports": {
-    "enabled": true
+  "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
   },
   "files": {
-    "ignore": ["dist", "node_modules", "coverage", "templates"]
+    "includes": ["**", "!**/dist", "!**/node_modules", "!**/coverage", "!**/templates"]
   },
   "linter": {
     "enabled": true,
@@ -12,11 +16,11 @@
       "recommended": true,
       "suspicious": {
         "noExplicitAny": "warn",
-        "noConsoleLog": "off"
+        "noConsole": { "level": "off", "options": { "allow": ["log"] } },
+        "noVar": "error"
       },
       "style": {
         "useConst": "error",
-        "noVar": "error",
         "noNonNullAssertion": "off",
         "useTemplate": "off",
         "noParameterAssign": "off",
