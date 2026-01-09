@@ -1,15 +1,14 @@
-import { exec } from 'node:child_process';
-import { promisify } from 'node:util';
 import { CLIError } from '../utils/error.js';
-
-const execAsync = promisify(exec);
+import { execFileAsync } from '../utils/exec.js';
+import { validateOutputPath } from '../utils/path.js';
+import { assertValidIdentifier } from '../utils/validation.js';
 
 /**
  * Check if Supabase CLI is installed
  */
 export async function checkSupabaseCLI(): Promise<boolean> {
   try {
-    await execAsync('supabase --version');
+    await execFileAsync('supabase', ['--version']);
     return true;
   } catch {
     return false;
@@ -30,7 +29,7 @@ export async function runSupabaseCommand(args: string[]): Promise<string> {
   }
 
   try {
-    const { stdout, stderr } = await execAsync(`supabase ${args.join(' ')}`);
+    const { stdout, stderr } = await execFileAsync('supabase', args);
     if (stderr && !stderr.includes('warning')) {
       console.error(stderr);
     }
@@ -47,6 +46,7 @@ export async function runSupabaseCommand(args: string[]): Promise<string> {
 export async function getSchema(tableName?: string): Promise<string> {
   const args = ['db', 'dump', '--schema', 'public'];
   if (tableName) {
+    assertValidIdentifier(tableName, 'table name');
     args.push('--data-only', '--table', tableName);
   }
   return runSupabaseCommand(args);
@@ -60,8 +60,9 @@ export async function generateTypes(outputPath?: string): Promise<string> {
   const output = await runSupabaseCommand(args);
 
   if (outputPath) {
+    const safePath = validateOutputPath(outputPath);
     const { writeFile } = await import('node:fs/promises');
-    await writeFile(outputPath, output);
+    await writeFile(safePath, output);
   }
 
   return output;
@@ -71,7 +72,10 @@ export async function generateTypes(outputPath?: string): Promise<string> {
  * RLS policy templates
  */
 export const RLS_POLICIES = {
-  'user-owned': (table: string, column: string) => `
+  'user-owned': (table: string, column: string) => {
+    assertValidIdentifier(table, 'table name');
+    assertValidIdentifier(column, 'column name');
+    return `
 -- RLS Policies for ${table} (user-owned)
 
 -- Enable RLS
@@ -96,9 +100,13 @@ CREATE POLICY "Users can update own ${table}"
 CREATE POLICY "Users can delete own ${table}"
   ON ${table} FOR DELETE
   USING (auth.uid() = ${column});
-`,
+`;
+  },
 
-  'team-owned': (table: string, teamColumn: string) => `
+  'team-owned': (table: string, teamColumn: string) => {
+    assertValidIdentifier(table, 'table name');
+    assertValidIdentifier(teamColumn, 'column name');
+    return `
 -- RLS Policies for ${table} (team-owned)
 
 -- Enable RLS
@@ -139,9 +147,12 @@ CREATE POLICY "Team admins can delete ${table}"
       SELECT team_id FROM team_members WHERE user_id = auth.uid() AND role = 'admin'
     )
   );
-`,
+`;
+  },
 
-  'public-read': (table: string) => `
+  'public-read': (table: string) => {
+    assertValidIdentifier(table, 'table name');
+    return `
 -- RLS Policies for ${table} (public-read)
 
 -- Enable RLS
@@ -166,9 +177,12 @@ CREATE POLICY "Owners can update ${table}"
 CREATE POLICY "Owners can delete ${table}"
   ON ${table} FOR DELETE
   USING (auth.uid() = user_id);
-`,
+`;
+  },
 
-  'admin-only': (table: string) => `
+  'admin-only': (table: string) => {
+    assertValidIdentifier(table, 'table name');
+    return `
 -- RLS Policies for ${table} (admin-only)
 
 -- Enable RLS
@@ -201,7 +215,8 @@ CREATE POLICY "Admins can delete ${table}"
   USING (
     auth.uid() IN (SELECT user_id FROM admins)
   );
-`,
+`;
+  },
 };
 
 export type RLSPolicyType = keyof typeof RLS_POLICIES;

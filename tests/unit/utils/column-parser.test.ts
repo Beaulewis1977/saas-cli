@@ -99,3 +99,39 @@ describe('columnsToDrift', () => {
     expect(drift).toContain('.withDefault(');
   });
 });
+
+describe('security: SQL injection prevention', () => {
+  it('rejects invalid column names', () => {
+    expect(() => parseColumnSpec('id;DROP TABLE users:int')).toThrow();
+    expect(() => parseColumnSpec("user's:text")).toThrow();
+    expect(() => parseColumnSpec('user-id:int')).toThrow();
+  });
+
+  it('rejects invalid table names in columnsToSQL', () => {
+    const columns = parseColumnSpec('id:int:pk');
+    expect(() => columnsToSQL('users; DROP TABLE users;--', columns)).toThrow();
+    expect(() => columnsToSQL('table-name', columns)).toThrow();
+  });
+
+  it('rejects invalid table names in columnsToDrift', () => {
+    const columns = parseColumnSpec('id:int:pk');
+    expect(() => columnsToDrift('users; DROP TABLE users;--', columns)).toThrow();
+    expect(() => columnsToDrift('table-name', columns)).toThrow();
+  });
+
+  it('rejects invalid foreign key table names', () => {
+    expect(() => parseColumnSpec('userId:uuid:fk(auth;DROP TABLE users.id)')).toThrow();
+    expect(() => parseColumnSpec("userId:uuid:fk(auth'---.id)")).toThrow();
+  });
+
+  it('rejects invalid foreign key column names', () => {
+    expect(() => parseColumnSpec('userId:uuid:fk(auth.users.id;DROP TABLE)')).toThrow();
+    expect(() => parseColumnSpec("userId:uuid:fk(auth.users.id')")).toThrow();
+  });
+
+  it('accepts valid identifiers with underscores and numbers', () => {
+    expect(() => parseColumnSpec('user_id:int,post_count_2:int')).not.toThrow();
+    const columns = parseColumnSpec('user_id:int');
+    expect(() => columnsToSQL('user_posts_v2', columns)).not.toThrow();
+  });
+});

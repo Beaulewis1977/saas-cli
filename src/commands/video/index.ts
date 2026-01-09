@@ -1,15 +1,17 @@
-import { exec } from 'node:child_process';
-import { promisify } from 'node:util';
 import { Command } from 'commander';
 import ora from 'ora';
 import pc from 'picocolors';
 import { CLIError, handleError } from '../../utils/error.js';
-
-const execAsync = promisify(exec);
+import { execFileAsync } from '../../utils/exec.js';
+import {
+  assertValidCRF,
+  assertValidResolution,
+  assertValidTimestamp,
+} from '../../utils/validation.js';
 
 async function checkFFmpeg(): Promise<boolean> {
   try {
-    await execAsync('ffmpeg -version');
+    await execFileAsync('ffmpeg', ['-version']);
     return true;
   } catch {
     return false;
@@ -27,7 +29,7 @@ async function runFFmpeg(args: string[]): Promise<string> {
   }
 
   try {
-    const { stdout, stderr } = await execAsync(`ffmpeg ${args.join(' ')}`);
+    const { stdout, stderr } = await execFileAsync('ffmpeg', args);
     return stdout || stderr;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -46,7 +48,7 @@ async function runFFprobe(args: string[]): Promise<string> {
   }
 
   try {
-    const { stdout } = await execAsync(`ffprobe ${args.join(' ')}`);
+    const { stdout } = await execFileAsync('ffprobe', args);
     return stdout;
   } catch (error) {
     const err = error as { stderr?: string };
@@ -70,7 +72,7 @@ export const videoCommand = new Command('video')
             'json',
             '-show_format',
             '-show_streams',
-            `"${file}"`,
+            file,
           ]);
 
           spinner.stop();
@@ -128,15 +130,15 @@ export const videoCommand = new Command('video')
         try {
           await runFFmpeg([
             '-i',
-            `"${video}"`,
+            video,
             '-i',
-            `"${audio}"`,
+            audio,
             '-c:v',
             'copy',
             '-c:a',
             'aac',
             '-y',
-            `"${options.output}"`,
+            options.output,
           ]);
 
           spinner.succeed(`Combined: ${options.output}`);
@@ -153,18 +155,10 @@ export const videoCommand = new Command('video')
       .option('--at <timestamp>', 'Timestamp (e.g., 00:00:05)', '00:00:01')
       .requiredOption('-o, --output <file>', 'Output file path')
       .action(async (video, options) => {
+        assertValidTimestamp(options.at);
         const spinner = ora('Extracting thumbnail...').start();
         try {
-          await runFFmpeg([
-            '-i',
-            `"${video}"`,
-            '-ss',
-            options.at,
-            '-vframes',
-            '1',
-            '-y',
-            `"${options.output}"`,
-          ]);
+          await runFFmpeg(['-i', video, '-ss', options.at, '-vframes', '1', '-y', options.output]);
 
           spinner.succeed(`Thumbnail: ${options.output}`);
         } catch (error) {
@@ -177,19 +171,15 @@ export const videoCommand = new Command('video')
     new Command('resize')
       .description('Resize video')
       .argument('<video>', 'Video file path')
-      .requiredOption('-s, --size <WxH>', 'New size (e.g., 1280x720)')
+      .requiredOption('-s, --size <WxH>', 'New size (e.g., 1280x720 or -1:720)')
       .requiredOption('-o, --output <file>', 'Output file path')
       .action(async (video, options) => {
+        assertValidResolution(options.size);
+        // Convert WxH format to W:H for FFmpeg scale filter
+        const scaleSize = options.size.replace('x', ':');
         const spinner = ora('Resizing video...').start();
         try {
-          await runFFmpeg([
-            '-i',
-            `"${video}"`,
-            '-vf',
-            `scale=${options.size}`,
-            '-y',
-            `"${options.output}"`,
-          ]);
+          await runFFmpeg(['-i', video, '-vf', `scale=${scaleSize}`, '-y', options.output]);
 
           spinner.succeed(`Resized: ${options.output}`);
         } catch (error) {
@@ -202,14 +192,15 @@ export const videoCommand = new Command('video')
     new Command('compress')
       .description('Compress video')
       .argument('<video>', 'Video file path')
-      .option('-q, --quality <crf>', 'Quality (1-51, lower is better)', '23')
+      .option('-q, --quality <crf>', 'Quality (0-51, lower is better)', '23')
       .requiredOption('-o, --output <file>', 'Output file path')
       .action(async (video, options) => {
+        assertValidCRF(options.quality);
         const spinner = ora('Compressing video...').start();
         try {
           await runFFmpeg([
             '-i',
-            `"${video}"`,
+            video,
             '-c:v',
             'libx264',
             '-crf',
@@ -217,7 +208,7 @@ export const videoCommand = new Command('video')
             '-preset',
             'medium',
             '-y',
-            `"${options.output}"`,
+            options.output,
           ]);
 
           spinner.succeed(`Compressed: ${options.output}`);
@@ -235,11 +226,13 @@ export const videoCommand = new Command('video')
       .requiredOption('--end <time>', 'End time (e.g., 00:01:00)')
       .requiredOption('-o, --output <file>', 'Output file path')
       .action(async (video, options) => {
+        assertValidTimestamp(options.start);
+        assertValidTimestamp(options.end);
         const spinner = ora('Trimming video...').start();
         try {
           await runFFmpeg([
             '-i',
-            `"${video}"`,
+            video,
             '-ss',
             options.start,
             '-to',
@@ -247,7 +240,7 @@ export const videoCommand = new Command('video')
             '-c',
             'copy',
             '-y',
-            `"${options.output}"`,
+            options.output,
           ]);
 
           spinner.succeed(`Trimmed: ${options.output}`);

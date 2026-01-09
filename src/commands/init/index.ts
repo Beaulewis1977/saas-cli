@@ -4,6 +4,8 @@ import { Command } from 'commander';
 import ora from 'ora';
 import pc from 'picocolors';
 import { CLIError, handleError } from '../../utils/error.js';
+import { assertCommandExists, execFileAsync } from '../../utils/exec.js';
+import { assertValidProjectName } from '../../utils/validation.js';
 
 export const initCommand = new Command('init')
   .description('Initialize projects and add features')
@@ -12,14 +14,16 @@ export const initCommand = new Command('init')
       .description('Initialize a new Flutter project with SaaS stack')
       .argument('<name>', 'Project name')
       .action(async (name) => {
+        assertValidProjectName(name);
         const spinner = ora('Creating Flutter project...').start();
         try {
-          const { exec } = await import('node:child_process');
-          const { promisify } = await import('node:util');
-          const execAsync = promisify(exec);
-
+          await assertCommandExists(
+            'flutter',
+            'Flutter SDK',
+            'Install Flutter: https://docs.flutter.dev/get-started/install',
+          );
           // Create Flutter project
-          await execAsync(`flutter create ${name}`);
+          await execFileAsync('flutter', ['create', name]);
           spinner.text = 'Adding dependencies...';
 
           // Add dependencies
@@ -35,8 +39,8 @@ export const initCommand = new Command('init')
           const devDeps = ['riverpod_generator', 'build_runner', 'freezed', 'json_serializable'];
 
           process.chdir(name);
-          await execAsync(`flutter pub add ${deps.join(' ')}`);
-          await execAsync(`flutter pub add --dev ${devDeps.join(' ')}`);
+          await execFileAsync('flutter', ['pub', 'add', ...deps]);
+          await execFileAsync('flutter', ['pub', 'add', '--dev', ...devDeps]);
 
           spinner.succeed('Flutter project created');
           console.log(pc.green(`\nProject "${name}" created with:`));
@@ -59,11 +63,12 @@ export const initCommand = new Command('init')
       .action(async () => {
         const spinner = ora('Initializing Supabase...').start();
         try {
-          const { exec } = await import('node:child_process');
-          const { promisify } = await import('node:util');
-          const execAsync = promisify(exec);
-
-          await execAsync('supabase init');
+          await assertCommandExists(
+            'supabase',
+            'Supabase CLI',
+            'Install Supabase CLI: npm install -g supabase or brew install supabase/tap/supabase',
+          );
+          await execFileAsync('supabase', ['init']);
 
           spinner.succeed('Supabase initialized');
           console.log(pc.green('\nSupabase project created'));
@@ -81,13 +86,15 @@ export const initCommand = new Command('init')
       .description('Initialize a new Cloudflare Worker')
       .argument('<name>', 'Worker name')
       .action(async (name) => {
+        assertValidProjectName(name);
         const spinner = ora('Creating Cloudflare Worker...').start();
         try {
-          const { exec } = await import('node:child_process');
-          const { promisify } = await import('node:util');
-          const execAsync = promisify(exec);
-
-          await execAsync(`wrangler init ${name}`);
+          await assertCommandExists(
+            'wrangler',
+            'Wrangler CLI',
+            'Install Wrangler: npm install -g wrangler',
+          );
+          await execFileAsync('wrangler', ['init', name]);
 
           spinner.succeed('Cloudflare Worker created');
           console.log(pc.green(`\nWorker "${name}" created`));
@@ -107,10 +114,11 @@ export const initCommand = new Command('init')
       .action(async (feature) => {
         const spinner = ora(`Adding ${feature}...`).start();
         try {
-          const { exec } = await import('node:child_process');
-          const { promisify } = await import('node:util');
-          const execAsync = promisify(exec);
-
+          await assertCommandExists(
+            'flutter',
+            'Flutter SDK',
+            'Install Flutter: https://docs.flutter.dev/get-started/install',
+          );
           let deps: string[] = [];
           let devDeps: string[] = [];
 
@@ -138,10 +146,10 @@ export const initCommand = new Command('init')
           }
 
           if (deps.length > 0) {
-            await execAsync(`flutter pub add ${deps.join(' ')}`);
+            await execFileAsync('flutter', ['pub', 'add', ...deps]);
           }
           if (devDeps.length > 0) {
-            await execAsync(`flutter pub add --dev ${devDeps.join(' ')}`);
+            await execFileAsync('flutter', ['pub', 'add', '--dev', ...devDeps]);
           }
 
           spinner.succeed(`${feature} added`);

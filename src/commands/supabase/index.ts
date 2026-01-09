@@ -4,6 +4,8 @@ import pc from 'picocolors';
 import { RLS_POLICIES, type RLSPolicyType, runSupabaseCommand } from '../../services/supabase.js';
 import { columnsToSQL, parseColumnSpec } from '../../utils/column-parser.js';
 import { CLIError, handleError } from '../../utils/error.js';
+import { validateOutputPath } from '../../utils/path.js';
+import { assertValidProjectName } from '../../utils/validation.js';
 
 export const supabaseCommand = new Command('supabase')
   .description('Supabase database management')
@@ -95,6 +97,7 @@ export const supabaseCommand = new Command('supabase')
               if (!name) {
                 throw new CLIError('Migration name required for "new" action');
               }
+              assertValidProjectName(name);
               args = ['migration', 'new', name];
               break;
             case 'apply':
@@ -146,9 +149,10 @@ export const supabaseCommand = new Command('supabase')
           spinner.stop();
 
           if (options.output) {
+            const safePath = validateOutputPath(options.output);
             const { writeFile } = await import('node:fs/promises');
-            await writeFile(options.output, output);
-            console.log(pc.green(`✓ Generated ${options.output}`));
+            await writeFile(safePath, output);
+            console.log(pc.green(`✓ Generated ${safePath}`));
           } else {
             console.log(output);
           }
@@ -164,6 +168,7 @@ export const supabaseCommand = new Command('supabase')
       .argument('<action>', 'Action: new, deploy, logs')
       .argument('<name>', 'Function name')
       .action(async (action, name) => {
+        assertValidProjectName(name);
         const spinner = ora(`Running fn ${action}...`).start();
         try {
           let args: string[];

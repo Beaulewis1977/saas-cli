@@ -1,5 +1,6 @@
 import type { ColumnSpec } from '../types/index.js';
 import { CLIError } from './error.js';
+import { validateIdentifier } from './validation.js';
 
 /**
  * Parse a column specification string into structured column definitions
@@ -53,6 +54,15 @@ function parseColumn(definition: string): ColumnSpec {
     );
   }
 
+  // Validate column name is a safe SQL identifier
+  if (!validateIdentifier(name)) {
+    throw new CLIError(
+      `Invalid column name: "${name}"`,
+      1,
+      'Column name must start with a letter or underscore, and contain only letters, numbers, and underscores.',
+    );
+  }
+
   const column: ColumnSpec = {
     name,
     type: normalizeType(type),
@@ -96,13 +106,39 @@ function parseModifier(column: ColumnSpec, modifier: string): void {
     column.isForeignKey = true;
     const ref = fkMatch[1]!;
     const parts = ref.split('.');
+    let fkTable: string;
+    let fkColumn: string;
     if (parts.length >= 2) {
-      column.foreignKeyTable = parts.slice(0, -1).join('.');
-      column.foreignKeyColumn = parts[parts.length - 1];
+      fkTable = parts.slice(0, -1).join('.');
+      fkColumn = parts[parts.length - 1]!;
     } else {
-      column.foreignKeyTable = ref;
-      column.foreignKeyColumn = 'id';
+      fkTable = ref;
+      fkColumn = 'id';
     }
+
+    // Validate FK table (may be schema.table format)
+    const tableParts = fkTable.split('.');
+    for (const part of tableParts) {
+      if (!validateIdentifier(part)) {
+        throw new CLIError(
+          `Invalid foreign key table: "${fkTable}"`,
+          1,
+          'Foreign key table must contain only valid SQL identifiers (letters, numbers, underscores).',
+        );
+      }
+    }
+
+    // Validate FK column
+    if (!validateIdentifier(fkColumn)) {
+      throw new CLIError(
+        `Invalid foreign key column: "${fkColumn}"`,
+        1,
+        'Foreign key column must start with a letter or underscore, and contain only letters, numbers, and underscores.',
+      );
+    }
+
+    column.foreignKeyTable = fkTable;
+    column.foreignKeyColumn = fkColumn;
     return;
   }
 
@@ -157,6 +193,15 @@ function normalizeType(type: string): string {
  * Convert columns to SQL CREATE TABLE statement
  */
 export function columnsToSQL(tableName: string, columns: ColumnSpec[]): string {
+  // Validate table name
+  if (!validateIdentifier(tableName)) {
+    throw new CLIError(
+      `Invalid table name: "${tableName}"`,
+      1,
+      'Table name must start with a letter or underscore, and contain only letters, numbers, and underscores.',
+    );
+  }
+
   const lines: string[] = [];
 
   for (const col of columns) {
@@ -190,6 +235,15 @@ export function columnsToSQL(tableName: string, columns: ColumnSpec[]): string {
  * Convert columns to Drift table definition
  */
 export function columnsToDrift(tableName: string, columns: ColumnSpec[]): string {
+  // Validate table name
+  if (!validateIdentifier(tableName)) {
+    throw new CLIError(
+      `Invalid table name: "${tableName}"`,
+      1,
+      'Table name must start with a letter or underscore, and contain only letters, numbers, and underscores.',
+    );
+  }
+
   const lines: string[] = [`class ${toPascalCase(tableName)} extends Table {`];
 
   for (const col of columns) {
