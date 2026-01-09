@@ -285,7 +285,86 @@ saas init add riverpod,drift,freezed
 
 ## Environment Variables
 
-Create a `.env` file in your project root or set these in your shell configuration.
+The CLI reads environment variables for API keys and service credentials. You have two options:
+
+### Option 1: Project `.env` File (Recommended)
+
+Create a `.env` file in your project directory. This allows different API keys per project.
+
+```bash
+# Create .env in your project root (add to .gitignore!)
+touch .env
+```
+
+**Copy this template into your `.env` file:**
+
+```ini
+# Documentation (Context7)
+CONTEXT7_API_KEY=
+
+# AI Questions (Perplexity)
+PERPLEXITY_API_KEY=
+
+# Supabase
+SUPABASE_PROJECT_REF=
+SUPABASE_ACCESS_TOKEN=
+
+# Redis
+REDIS_URL=
+
+# Cloudflare Workers
+CF_API_TOKEN=
+
+# Push Notifications (OneSignal)
+ONESIGNAL_APP_ID=
+ONESIGNAL_API_KEY=
+
+# Feature Flags (PostHog)
+POSTHOG_API_KEY=
+POSTHOG_PROJECT_ID=
+```
+
+**Add `.env` to your `.gitignore` to avoid committing secrets:**
+
+```gitignore
+.env
+```
+
+### Option 2: Shell Exports (Global)
+
+Add these to your `~/.bashrc`, `~/.zshrc`, or shell config for system-wide access:
+
+```bash
+# Documentation (Context7)
+export CONTEXT7_API_KEY="your-key-here"
+
+# AI Questions (Perplexity)
+export PERPLEXITY_API_KEY="pplx-your-key-here"
+
+# Supabase
+export SUPABASE_PROJECT_REF="your-project-ref"
+export SUPABASE_ACCESS_TOKEN="your-access-token"
+
+# Redis
+export REDIS_URL="redis://localhost:6379"
+
+# Cloudflare Workers
+export CF_API_TOKEN="your-cloudflare-token"
+
+# Push Notifications (OneSignal)
+export ONESIGNAL_APP_ID="your-app-id"
+export ONESIGNAL_API_KEY="your-api-key"
+
+# Feature Flags (PostHog)
+export POSTHOG_API_KEY="your-posthog-key"
+export POSTHOG_PROJECT_ID="your-project-id"
+```
+
+After adding, reload your shell: `source ~/.bashrc` or `source ~/.zshrc`
+
+> **Note:** Shell-exported environment variables take precedence over `.env` file values. If you have both, the shell export wins.
+
+### Variable Reference
 
 | Variable | Description | Required For |
 |----------|-------------|--------------|
