@@ -1,15 +1,57 @@
-# saas
+<div align="center">
 
-A unified CLI for Flutter SaaS development with live documentation, AI-powered assistance, code generation, and backend integration.
+# saas-cli
+
+**A unified CLI for Flutter SaaS development**
+
+Live documentation · AI-powered assistance · Code generation · Backend integrations
+
+[![npm version](https://img.shields.io/npm/v/@beaulewis/saas-cli.svg?style=flat-square)](https://www.npmjs.com/package/@beaulewis/saas-cli)
+[![license](https://img.shields.io/npm/l/@beaulewis/saas-cli.svg?style=flat-square)](https://github.com/Beaulewis1977/saas-cli/blob/main/LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/Beaulewis1977/saas-cli/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/Beaulewis1977/saas-cli/actions/workflows/ci.yml)
+[![node](https://img.shields.io/node/v/@beaulewis/saas-cli.svg?style=flat-square)](https://nodejs.org)
+
+</div>
+
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Commands](#commands)
+  - [docs](#docs---documentation-lookup)
+  - [ask](#ask---ai-powered-questions)
+  - [gen](#gen---code-generation)
+  - [supabase](#supabase---database-management)
+  - [redis](#redis---cache-management)
+  - [cf](#cf---cloudflare-workers)
+  - [push](#push---push-notifications)
+  - [flags](#flags---feature-flags)
+  - [video](#video---video-processing)
+  - [init](#init---project-scaffolding)
+- [Environment Variables](#environment-variables)
+- [Configuration](#configuration)
+- [Security Notes](#security-notes)
+- [Contributing](#contributing)
+- [License](#license)
+- [Author](#author)
+
+---
 
 ## Features
 
-- **Live Documentation** - Query Flutter, Dart, and package docs via Context7
-- **AI-Powered Questions** - Ask technical questions with Perplexity AI
-- **Code Generation** - Generate Riverpod, Drift, GoRouter, Freezed, and more
-- **Supabase Management** - RLS policies, migrations, types, functions
-- **Backend Services** - Redis, Cloudflare Workers, OneSignal, PostHog
-- **Video Processing** - FFmpeg-based video operations
+| Feature | Description |
+|---------|-------------|
+| **Live Documentation** | Query Flutter, Dart, and package docs via Context7 |
+| **AI-Powered Questions** | Ask technical questions with Perplexity AI |
+| **Code Generation** | Generate Riverpod, Drift, GoRouter, Freezed, and more |
+| **Supabase Management** | RLS policies, migrations, types, functions |
+| **Backend Services** | Redis, Cloudflare Workers, OneSignal, PostHog |
+| **Video Processing** | FFmpeg-based video operations |
+
+---
 
 ## Installation
 
@@ -20,10 +62,20 @@ npm install -g @beaulewis/saas-cli
 # Global install via pnpm
 pnpm add -g @beaulewis/saas-cli
 
-# Run without installing (npx)
+# Run without installing
 npx @beaulewis/saas-cli --help
+```
 
-# Or clone and link locally
+Verify installation:
+
+```bash
+saas --version
+```
+
+<details>
+<summary><strong>Install from source</strong></summary>
+
+```bash
 git clone https://github.com/Beaulewis1977/saas-cli.git
 cd saas-cli
 pnpm install
@@ -31,15 +83,13 @@ pnpm build
 pnpm link --global
 ```
 
+</details>
+
+---
+
 ## Quick Start
 
 ```bash
-# Check version
-saas --version
-
-# Get help
-saas --help
-
 # Look up Flutter documentation
 saas docs flutter "ListView.builder with pagination"
 
@@ -49,6 +99,8 @@ saas ask "best practices for offline-first Flutter apps"
 # Generate a Riverpod notifier
 saas gen riverpod notifier UserList --state "List<User>"
 ```
+
+---
 
 ## Commands
 
@@ -74,11 +126,14 @@ saas ask --model sonar-reasoning "debug this riverpod error"
 saas ask --model sonar-deep-research "compare state management solutions"
 ```
 
-**Models:**
-- `sonar` (default) - Fast, general queries
-- `sonar-pro` - Enhanced responses
-- `sonar-reasoning` - Complex problem solving
-- `sonar-deep-research` - In-depth research
+**Available Models:**
+
+| Model | Use Case |
+|-------|----------|
+| `sonar` | Fast, general queries (default) |
+| `sonar-pro` | Enhanced responses |
+| `sonar-reasoning` | Complex problem solving |
+| `sonar-deep-research` | In-depth research |
 
 ### `gen` - Code Generation
 
@@ -214,39 +269,50 @@ saas init worker my-edge-function
 saas init add riverpod,drift,freezed
 ```
 
-## Environment Variables
+---
 
-| Variable | Description | Required For |
-|----------|-------------|--------------|
-| `CONTEXT7_API_KEY` | Context7 API key | `docs` commands |
-| `PERPLEXITY_API_KEY` | Perplexity API key | `ask` commands |
-| `SUPABASE_PROJECT_REF` | Supabase project reference | `supabase` commands |
-| `SUPABASE_ACCESS_TOKEN` | Supabase access token | `supabase` commands |
-| `REDIS_URL` | Redis connection URL | `redis` commands |
-| `CF_API_TOKEN` or `CLOUDFLARE_API_TOKEN` | Cloudflare API token | `cf` commands |
-| `ONESIGNAL_APP_ID` | OneSignal app ID | `push` commands |
-| `ONESIGNAL_API_KEY` | OneSignal API key | `push` commands |
-| `POSTHOG_API_KEY` | PostHog API key | `flags` commands |
-| `POSTHOG_PROJECT_ID` | PostHog project ID | `flags` commands |
+## Environment Variables
 
 Create a `.env` file in your project root or set these in your shell configuration.
 
+| Variable | Description | Required For |
+|----------|-------------|--------------|
+| `CONTEXT7_API_KEY` | Context7 API key | `docs` |
+| `PERPLEXITY_API_KEY` | Perplexity API key | `ask` |
+| `SUPABASE_PROJECT_REF` | Supabase project reference | `supabase` |
+| `SUPABASE_ACCESS_TOKEN` | Supabase access token | `supabase` |
+| `REDIS_URL` | Redis connection URL | `redis` |
+| `CF_API_TOKEN` | Cloudflare API token | `cf` |
+| `ONESIGNAL_APP_ID` | OneSignal app ID | `push` |
+| `ONESIGNAL_API_KEY` | OneSignal API key | `push` |
+| `POSTHOG_API_KEY` | PostHog API key | `flags` |
+| `POSTHOG_PROJECT_ID` | PostHog project ID | `flags` |
+
+---
+
 ## Global Options
 
-```bash
---json      Output results as JSON
+```
+--json          Output results as JSON
 -v, --verbose   Enable verbose output
---debug     Enable debug output
+--debug         Enable debug output
 -V, --version   Display version number
 -h, --help      Display help
 ```
+
+---
 
 ## Configuration
 
 The CLI stores configuration in `~/.config/saas-cli/`:
 
-- `config.yaml` - CLI settings
-- `cache/` - Response cache for faster lookups
+```
+~/.config/saas-cli/
+├── config.yaml    # CLI settings
+└── cache/         # Response cache for faster lookups
+```
+
+---
 
 ## Security Notes
 
@@ -256,9 +322,11 @@ This CLI executes external tools (FFmpeg, Wrangler, Flutter, Supabase CLI) via s
 - File paths in `video` commands
 - Custom arguments passed to backend CLIs
 
+---
+
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
 
 ```bash
 # Clone and install
@@ -276,18 +344,30 @@ pnpm test
 pnpm build
 ```
 
+---
+
 ## License
 
-MIT License - see [LICENSE](LICENSE)
+[MIT License](LICENSE) - see LICENSE file for details.
 
-## Author & Support
+---
 
-**Designed and built by Beau Lewis**
+<div align="center">
 
-- Email: blewisxx@gmail.com
-- GitHub: [@Beaulewis1977](https://github.com/Beaulewis1977)
+## Author
 
-If you find this useful and want to support continued development:
+**Beau Lewis**
 
-- Venmo: [@BeauinTulsa](https://venmo.com/BeauinTulsa)
-- Ko-fi: [ko-fi.com/beaulewis](https://ko-fi.com/beaulewis)
+[![GitHub](https://img.shields.io/badge/GitHub-@Beaulewis1977-181717?style=flat-square&logo=github)](https://github.com/Beaulewis1977)
+[![Email](https://img.shields.io/badge/Email-blewisxx@gmail.com-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:blewisxx@gmail.com)
+
+---
+
+### Support This Project
+
+If you find this tool useful and want to support continued development:
+
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20Me-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/beaulewis)
+[![Venmo](https://img.shields.io/badge/Venmo-@BeauinTulsa-3D95CE?style=for-the-badge&logo=venmo&logoColor=white)](https://venmo.com/BeauinTulsa)
+
+</div>
