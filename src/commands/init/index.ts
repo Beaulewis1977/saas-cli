@@ -5,7 +5,7 @@ import ora from 'ora';
 import pc from 'picocolors';
 import { CLIError, handleError } from '../../utils/error.js';
 import { assertCommandExists, execFileAsync } from '../../utils/exec.js';
-import { assertValidProjectName } from '../../utils/validation.js';
+import { assertValidFlutterPackageName, assertValidWorkerName } from '../../utils/validation.js';
 
 export const initCommand = new Command('init')
   .description('Initialize projects and add features')
@@ -14,7 +14,7 @@ export const initCommand = new Command('init')
       .description('Initialize a new Flutter project with SaaS stack')
       .argument('<name>', 'Project name')
       .action(async (name) => {
-        assertValidProjectName(name);
+        assertValidFlutterPackageName(name);
         const spinner = ora('Creating Flutter project...').start();
         try {
           await assertCommandExists(
@@ -86,7 +86,7 @@ export const initCommand = new Command('init')
       .description('Initialize a new Cloudflare Worker')
       .argument('<name>', 'Worker name')
       .action(async (name) => {
-        assertValidProjectName(name);
+        assertValidWorkerName(name);
         const spinner = ora('Creating Cloudflare Worker...').start();
         try {
           await assertCommandExists(

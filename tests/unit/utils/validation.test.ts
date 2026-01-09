@@ -2,12 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { CLIError } from '../../../src/utils/error.js';
 import {
   assertValidCRF,
+  assertValidFlutterPackageName,
   assertValidIdentifier,
   assertValidProjectName,
   assertValidResolution,
   assertValidTimestamp,
   assertValidWorkerName,
   validateCRF,
+  validateFlutterPackageName,
   validateIdentifier,
   validateProjectName,
   validateResolution,
@@ -143,6 +145,62 @@ describe('assertValidWorkerName', () => {
       expect(error).toBeInstanceOf(CLIError);
       expect((error as CLIError).message).toContain('Invalid worker name');
       expect((error as CLIError).hint).toContain('no underscores');
+    }
+  });
+});
+
+describe('validateFlutterPackageName', () => {
+  it('accepts valid Flutter package names (lowercase with underscores)', () => {
+    expect(validateFlutterPackageName('my_app')).toBe(true);
+    expect(validateFlutterPackageName('myapp')).toBe(true);
+    expect(validateFlutterPackageName('app123')).toBe(true);
+    expect(validateFlutterPackageName('my_flutter_app')).toBe(true);
+    expect(validateFlutterPackageName('a')).toBe(true);
+  });
+
+  it('rejects names with hyphens (Dart does not allow them)', () => {
+    expect(validateFlutterPackageName('my-app')).toBe(false);
+    expect(validateFlutterPackageName('my-flutter-app')).toBe(false);
+  });
+
+  it('rejects names with uppercase (Dart requires lowercase)', () => {
+    expect(validateFlutterPackageName('MyApp')).toBe(false);
+    expect(validateFlutterPackageName('myApp')).toBe(false);
+    expect(validateFlutterPackageName('MYAPP')).toBe(false);
+  });
+
+  it('rejects other invalid package names', () => {
+    expect(validateFlutterPackageName('123app')).toBe(false);
+    expect(validateFlutterPackageName('_myapp')).toBe(false);
+    expect(validateFlutterPackageName('my app')).toBe(false);
+    expect(validateFlutterPackageName('my.app')).toBe(false);
+    expect(validateFlutterPackageName('')).toBe(false);
+  });
+});
+
+describe('assertValidFlutterPackageName', () => {
+  it('does not throw for valid Flutter package names', () => {
+    expect(() => assertValidFlutterPackageName('my_app')).not.toThrow();
+    expect(() => assertValidFlutterPackageName('myapp')).not.toThrow();
+  });
+
+  it('throws CLIError for names with hyphens', () => {
+    expect(() => assertValidFlutterPackageName('my-app')).toThrow(CLIError);
+  });
+
+  it('throws CLIError for names with uppercase', () => {
+    expect(() => assertValidFlutterPackageName('MyApp')).toThrow(CLIError);
+  });
+
+  it('throws CLIError with helpful message', () => {
+    try {
+      assertValidFlutterPackageName('my-App');
+      expect.fail('Should have thrown');
+    } catch (error) {
+      expect(error).toBeInstanceOf(CLIError);
+      expect((error as CLIError).message).toContain('Invalid Flutter package name');
+      expect((error as CLIError).hint).toContain('lowercase');
+      expect((error as CLIError).hint).toContain('no hyphens');
     }
   });
 });

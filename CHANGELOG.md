@@ -13,9 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Project-level `.env` support**: The CLI now automatically loads environment variables from a `.env` file in the current directory, allowing per-project API key configuration.
 - **CLI existence checks**: Commands that require external CLIs (Flutter, Wrangler, Supabase, FFmpeg) now check if the CLI is installed before running and display helpful installation instructions if missing.
-- **Input validation utilities**: New validation functions for SQL identifiers, project names, file paths, timestamps, resolutions, and CRF values.
+- **Input validation utilities**: New validation functions for SQL identifiers, project names, worker names, Flutter package names, file paths, timestamps, resolutions, and CRF values.
 - **Path traversal protection**: Output file paths are now validated to prevent writing outside the project directory.
-- **Comprehensive test suite**: Added 51 new tests for security utilities (115 total tests).
+- **Comprehensive test suite**: Added 59 new tests for security utilities (123 total tests).
 
 ### Changed
 

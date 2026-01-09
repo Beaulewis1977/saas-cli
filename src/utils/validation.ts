@@ -20,6 +20,12 @@ const PROJECT_NAME_REGEX = /^[a-zA-Z][a-zA-Z0-9_-]*$/;
 const WORKER_NAME_REGEX = /^[a-zA-Z][a-zA-Z0-9-]*$/;
 
 /**
+ * Regex for valid Flutter/Dart package names.
+ * Must be lowercase, start with letter, contain only lowercase letters, numbers, and underscores.
+ */
+const FLUTTER_PACKAGE_REGEX = /^[a-z][a-z0-9_]*$/;
+
+/**
  * Regex for valid FFmpeg resolution format (WIDTHxHEIGHT or -1:HEIGHT etc).
  */
 const RESOLUTION_REGEX = /^(-?\d+):(-?\d+)$|^(\d+)x(\d+)$/;
@@ -98,6 +104,29 @@ export function assertValidWorkerName(name: string): void {
       `Invalid worker name: "${name}"`,
       EXIT_CODES.GENERAL_ERROR,
       'Worker name must start with a letter and contain only letters, numbers, and hyphens (no underscores).',
+    );
+  }
+}
+
+/**
+ * Validate a Flutter/Dart package name.
+ * Must be lowercase, start with letter, contain only lowercase letters, numbers, and underscores.
+ * @returns true if valid, false otherwise
+ */
+export function validateFlutterPackageName(name: string): boolean {
+  return FLUTTER_PACKAGE_REGEX.test(name);
+}
+
+/**
+ * Assert that a Flutter package name is valid, throwing CLIError if not.
+ * @param name - The package name to validate
+ */
+export function assertValidFlutterPackageName(name: string): void {
+  if (!validateFlutterPackageName(name)) {
+    throw new CLIError(
+      `Invalid Flutter package name: "${name}"`,
+      EXIT_CODES.GENERAL_ERROR,
+      'Flutter package name must be lowercase, start with a letter, and contain only lowercase letters, numbers, and underscores (no hyphens or uppercase).',
     );
   }
 }
