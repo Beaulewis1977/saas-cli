@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **CLI existence checks**: Commands that require external CLIs (Flutter, Wrangler, Supabase, FFmpeg) now check if the CLI is installed before running and display helpful installation instructions if missing.
 - **Input validation utilities**: New validation functions for SQL identifiers, project names, file paths, timestamps, resolutions, and CRF values.
 - **Path traversal protection**: Output file paths are now validated to prevent writing outside the project directory.
-- **Comprehensive test suite**: Added 43 new tests for security utilities (107 total tests).
+- **Comprehensive test suite**: Added 45 new tests for security utilities (109 total tests).
 
 ### Changed
 

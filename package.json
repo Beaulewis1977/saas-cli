@@ -1,6 +1,6 @@
 {
   "name": "@beaulewis/saas-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A unified CLI tool for Flutter SaaS development with live documentation, code generation, and backend integration",
   "type": "module",
   "packageManager": "pnpm@9.15.0",
