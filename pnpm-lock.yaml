@@ -18,7 +18,7 @@ importers:
         specifier: ^14.0.2
         version: 14.0.2
       dotenv:
-        specifier: ^17.2.3
+        specifier: 17.2.3
         version: 17.2.3
       got:
         specifier: ^14.6.6
