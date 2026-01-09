@@ -106,6 +106,14 @@ describe('columnsToDrift', () => {
 
     expect(drift).toContain('.withDefault(');
   });
+
+  it('escapes single quotes in string default values', () => {
+    const columns = parseColumnSpec("name:text:default(O'Brien)");
+    const drift = columnsToDrift('Users', columns);
+
+    // Should escape the single quote for valid Dart syntax
+    expect(drift).toContain("const Constant('O\\'Brien')");
+  });
 });
 
 describe('security: SQL injection prevention', () => {

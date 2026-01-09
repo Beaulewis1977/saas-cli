@@ -1,4 +1,4 @@
-import type { ColumnSpec } from '../types/index.js';
+import { type ColumnSpec, EXIT_CODES } from '../types/index.js';
 import { CLIError } from './error.js';
 import { validateIdentifier } from './validation.js';
 
@@ -39,7 +39,7 @@ function parseColumn(definition: string): ColumnSpec {
   if (segments.length < 2) {
     throw new CLIError(
       `Invalid column definition: "${definition}"`,
-      1,
+      EXIT_CODES.GENERAL_ERROR,
       'Format: name:type[:modifiers] (e.g., id:int:pk, title:text, userId:uuid:fk(auth.users.id))',
     );
   }
@@ -49,7 +49,7 @@ function parseColumn(definition: string): ColumnSpec {
   if (!name || !type) {
     throw new CLIError(
       `Missing name or type in column: "${definition}"`,
-      1,
+      EXIT_CODES.GENERAL_ERROR,
       'Each column must have a name and type',
     );
   }
@@ -58,7 +58,7 @@ function parseColumn(definition: string): ColumnSpec {
   if (!validateIdentifier(name)) {
     throw new CLIError(
       `Invalid column name: "${name}"`,
-      1,
+      EXIT_CODES.GENERAL_ERROR,
       'Column name must start with a letter or underscore, and contain only letters, numbers, and underscores.',
     );
   }
@@ -122,7 +122,7 @@ function parseModifier(column: ColumnSpec, modifier: string): void {
       if (!validateIdentifier(part)) {
         throw new CLIError(
           `Invalid foreign key table: "${fkTable}"`,
-          1,
+          EXIT_CODES.GENERAL_ERROR,
           'Foreign key table must contain only valid SQL identifiers (letters, numbers, underscores).',
         );
       }
@@ -132,7 +132,7 @@ function parseModifier(column: ColumnSpec, modifier: string): void {
     if (!validateIdentifier(fkColumn)) {
       throw new CLIError(
         `Invalid foreign key column: "${fkColumn}"`,
-        1,
+        EXIT_CODES.GENERAL_ERROR,
         'Foreign key column must start with a letter or underscore, and contain only letters, numbers, and underscores.',
       );
     }
@@ -151,7 +151,7 @@ function parseModifier(column: ColumnSpec, modifier: string): void {
 
   throw new CLIError(
     `Unknown modifier: "${modifier}"`,
-    1,
+    EXIT_CODES.GENERAL_ERROR,
     'Valid modifiers: pk, fk(table.column), nullable, default(value), autoincrement',
   );
 }
@@ -197,7 +197,7 @@ export function columnsToSQL(tableName: string, columns: ColumnSpec[]): string {
   if (!validateIdentifier(tableName)) {
     throw new CLIError(
       `Invalid table name: "${tableName}"`,
-      1,
+      EXIT_CODES.GENERAL_ERROR,
       'Table name must start with a letter or underscore, and contain only letters, numbers, and underscores.',
     );
   }
@@ -239,7 +239,7 @@ export function columnsToDrift(tableName: string, columns: ColumnSpec[]): string
   if (!validateIdentifier(tableName)) {
     throw new CLIError(
       `Invalid table name: "${tableName}"`,
-      1,
+      EXIT_CODES.GENERAL_ERROR,
       'Table name must start with a letter or underscore, and contain only letters, numbers, and underscores.',
     );
   }
@@ -344,7 +344,8 @@ function formatDartDefault(value: string, type: string): string {
   if (type === 'integer' || type === 'real' || type === 'bigint') {
     return `const Constant(${value})`;
   }
-  return `const Constant('${value}')`;
+  // Escape single quotes for Dart string literals
+  return `const Constant('${value.replace(/'/g, "\\'")}')`;
 }
 
 // Case conversion helpers
