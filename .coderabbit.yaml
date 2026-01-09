@@ -1,45 +1,56 @@
+# CodeRabbit Configuration
+# https://docs.coderabbit.ai/configuration
+
 language: en-US
 
 reviews:
+  # Auto-review PRs
   auto_review:
     enabled: true
     drafts: false
     base_branches:
       - main
+      - develop
 
+  # Review profile: chill = fewer nitpicks, assertive = more thorough
+  profile: chill
+
+  # Request changes on high severity issues
   request_changes_workflow: true
+
+  # High-level summary at the top of review
   high_level_summary: true
+
+  # Add poem to review (fun touch)
   poem: false
 
-  path_filters:
-    - "!**/node_modules/**"
-    - "!**/dist/**"
-    - "!**/*.lock"
-    - "!**/pnpm-lock.yaml"
-    - "!**/*.generated.*"
+  # Review hints
+  review_status: true
 
+  # Collapse walkthrough in collapsible section
+  collapse_walkthrough: true
+
+  # Path-based instructions
   path_instructions:
     - path: "src/**/*.ts"
       instructions: |
-        Review for TypeScript best practices.
-        Ensure proper error handling with CLIError.
-        Check for type safety.
-        Verify CLI commands have proper --help documentation.
-
-    - path: "**/*.test.ts"
+        - Check for command injection vulnerabilities (avoid exec with string interpolation)
+        - Ensure proper error handling with CLIError
+        - Verify TypeScript strict mode compliance
+    - path: "tests/**/*.ts"
       instructions: |
-        Verify test coverage is comprehensive.
-        Check for proper mocking.
+        - Verify tests cover edge cases
+        - Check for proper async/await handling
 
-    - path: "src/commands/**"
-      instructions: |
-        Check for security vulnerabilities.
-        Verify input validation.
-        Ensure API keys come from environment variables.
+# Files to ignore
+path_filters:
+  - "!**/pnpm-lock.yaml"
+  - "!**/dist/**"
+  - "!**/*.map"
 
-    - path: "templates/**"
-      instructions: |
-        Verify Handlebars templates use {{{ }}} for code that shouldn't be escaped.
-
+# Chat settings
 chat:
   auto_reply: true
+
+# Early access features
+early_access: false
