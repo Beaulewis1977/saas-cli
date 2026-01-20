@@ -1,3 +1,4 @@
+import { createRequire } from 'node:module';
 import { Command } from 'commander';
 import pc from 'picocolors';
 import { askCommand } from './commands/ask/index.js';
@@ -13,7 +14,8 @@ import { supabaseCommand } from './commands/supabase/index.js';
 import { videoCommand } from './commands/video/index.js';
 import { handleError } from './utils/error.js';
 
-const VERSION = '1.0.0';
+const require = createRequire(import.meta.url);
+const { version: VERSION } = require('../package.json');
 
 /**
  * Create and configure the CLI program
