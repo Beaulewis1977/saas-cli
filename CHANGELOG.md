@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-01-20
+
+### Fixed
+
+- **Version reporting**: CLI now reads version from `package.json` dynamically instead of hardcoded value, ensuring `--version` always shows the correct version.
+
 ## [1.0.1] - 2026-01-09
 
 ### Added
@@ -68,6 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Video processing via FFmpeg (`video` command)
 - Project scaffolding (`init` command)
 
-[Unreleased]: https://github.com/Beaulewis1977/saas-cli/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/Beaulewis1977/saas-cli/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/Beaulewis1977/saas-cli/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/Beaulewis1977/saas-cli/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Beaulewis1977/saas-cli/releases/tag/v1.0.0
